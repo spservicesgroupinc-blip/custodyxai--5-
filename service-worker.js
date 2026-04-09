@@ -73,10 +73,12 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // --- Strategy 2: Stale-While-Revalidate for Google Fonts and Tailwind CSS ---
+  // --- Strategy 2: Stale-While-Revalidate for Google Fonts ---
   // This is the best strategy for assets that can be updated but don't need to be live.
   // It serves the cached version immediately for speed, then fetches an update in the background.
-  if (url.hostname === 'fonts.googleapis.com' || url.hostname === 'fonts.gstatic.com' || url.hostname === 'cdn.tailwindcss.com') {
+  // NOTE: Tailwind CDN (cdn.tailwindcss.com) is intentionally NOT cached here because it
+  // generates CSS dynamically based on HTML content. It should always fetch fresh.
+  if (url.hostname === 'fonts.googleapis.com' || url.hostname === 'fonts.gstatic.com') {
     event.respondWith(
       caches.open(CACHE_NAME).then(async (cache) => {
         const cachedResponse = await cache.match(event.request);
