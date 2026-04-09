@@ -1,8 +1,8 @@
 
-import React, { useState, useEffect } from 'react';
-import { api, setApiUrl, getApiUrl } from '../services/api';
+import React, { useState } from 'react';
+import { api } from '../services/api';
 import { User } from '../types';
-import { BookOpenIcon, LockClosedIcon, CheckCircleIcon, XMarkIcon, SparklesIcon } from './icons';
+import { BookOpenIcon, CheckCircleIcon } from './icons';
 
 interface AuthScreenProps {
     onLogin: (user: User) => void;
@@ -10,48 +10,19 @@ interface AuthScreenProps {
 
 const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin }) => {
     const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
-    const [showConfig, setShowConfig] = useState(false);
-    
+
     // Form States
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-    const [apiUrlInput, setApiUrlInput] = useState(getApiUrl());
-    
+
     // UI States
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
-    const [successMessage, setSuccessMessage] = useState('');
-
-    useEffect(() => {
-        // Automatically show config if missing on mount, but inside the modal
-        if (!getApiUrl()) {
-            // We don't force the view, but we ensure the input is empty or ready
-        }
-    }, []);
-
-    const handleConfigSave = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!apiUrlInput.trim()) {
-            setError('Please enter a valid URL');
-            return;
-        }
-        setApiUrl(apiUrlInput);
-        setShowConfig(false);
-        setError('');
-        setSuccessMessage('Server connection updated.');
-        setTimeout(() => setSuccessMessage(''), 3000);
-    };
 
     const handleAuth = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
-        setSuccessMessage('');
-
-        if (!getApiUrl()) {
-            setError('Server connection not configured. Please click "Server Settings" below.');
-            return;
-        }
 
         if (authMode === 'signup' && password !== confirmPassword) {
             setError('Passwords do not match.');
@@ -143,13 +114,6 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin }) => {
                                 <span className="font-bold">Error:</span> {error}
                             </div>
                         )}
-                        
-                        {successMessage && (
-                            <div className="mb-6 p-4 rounded-lg bg-green-50 border border-green-200 text-sm text-green-700 flex items-center gap-2">
-                                <CheckCircleIcon className="w-5 h-5" />
-                                {successMessage}
-                            </div>
-                        )}
 
                         <form onSubmit={handleAuth} className="space-y-5">
                             <div>
@@ -222,70 +186,9 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin }) => {
                                 </button>
                             </p>
                         </div>
-                        
-                        <div className="mt-12 pt-6 border-t border-gray-100 flex justify-center">
-                            <button
-                                onClick={() => setShowConfig(true)}
-                                className="text-xs text-gray-400 hover:text-gray-600 flex items-center gap-1.5 transition-colors"
-                            >
-                                <LockClosedIcon className="w-3 h-3" />
-                                Server Settings
-                            </button>
-                        </div>
                     </div>
                 </div>
             </div>
-
-            {/* Server Configuration Modal */}
-            {showConfig && (
-                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in-up">
-                    <div className="bg-white rounded-xl shadow-2xl w-full max-w-md p-6 relative">
-                        <button 
-                            onClick={() => setShowConfig(false)}
-                            className="absolute top-4 right-4 p-1 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100"
-                        >
-                            <XMarkIcon className="w-5 h-5" />
-                        </button>
-                        
-                        <div className="mb-6">
-                            <h3 className="text-lg font-bold text-gray-900">Server Configuration</h3>
-                            <p className="text-sm text-gray-500 mt-1">Connect your frontend to your Google Apps Script backend.</p>
-                        </div>
-
-                        <form onSubmit={handleConfigSave}>
-                             <div className="mb-4">
-                                <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1.5">Web App URL</label>
-                                <input
-                                    type="url"
-                                    value={apiUrlInput}
-                                    onChange={(e) => setApiUrlInput(e.target.value)}
-                                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                    placeholder="https://script.google.com/macros/s/..."
-                                    autoFocus
-                                />
-                            </div>
-                            <div className="bg-blue-50 p-3 rounded-md text-xs text-blue-800 mb-6 border border-blue-100">
-                                <strong>Note:</strong> Ensure you have deployed your script as a Web App with access set to "Anyone".
-                            </div>
-                            <div className="flex justify-end gap-3">
-                                <button
-                                    type="button"
-                                    onClick={() => setShowConfig(false)}
-                                    className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="px-4 py-2 text-sm font-semibold text-white bg-blue-950 rounded-md hover:bg-blue-900 transition-colors"
-                                >
-                                    Save Configuration
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
         </div>
     );
 };

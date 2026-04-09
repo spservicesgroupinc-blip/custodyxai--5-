@@ -1,11 +1,11 @@
 
 import { Report, StoredDocument, IncidentTemplate, UserProfile, User, Message } from '../types';
+import { API_URL as DEFAULT_API_URL } from '../constants/apiUrl';
 
-let API_URL = localStorage.getItem('custodyx_api_url') || '';
+let API_URL = DEFAULT_API_URL;
 
 export const setApiUrl = (url: string) => {
     API_URL = url;
-    localStorage.setItem('custodyx_api_url', url);
 };
 
 export const getApiUrl = () => API_URL;
