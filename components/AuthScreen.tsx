@@ -185,6 +185,19 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin }) => {
                                     {authMode === 'login' ? "Sign up now" : "Log in"}
                                 </button>
                             </p>
+                            {authMode === 'login' && (
+                                <p className="text-xs text-gray-500">
+                                    Need to configure your backend?{' '}
+                                    <a
+                                        href="https://docs.google.com/spreadsheets"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-blue-600 hover:text-blue-800 hover:underline"
+                                    >
+                                        Set up your Google Apps Script URL
+                                    </a>
+                                </p>
+                            )}
                         </div>
                     </div>
                 </div>
